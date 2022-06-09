@@ -3,12 +3,18 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <home-swiper :banners="banners"></home-swiper>
-    <recommend-view :recommends="recommends"></recommend-view>
-    <feature-view></feature-view>
-    <tab-control class="tab-control"
-                 :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
-    <goods-list :goods="showGoods"></goods-list>
+
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+        <home-swiper :banners="banners"></home-swiper>
+        <recommend-view :recommends="recommends"></recommend-view>
+        <feature-view></feature-view>
+        <tab-control class="tab-control"
+                     :titles="['流行','新款','精选']" @tabClick="tabClick"></tab-control>
+        <goods-list :goods="showGoods"></goods-list>
+    </scroll>
+
+<!--    .native 加上native之后才可以监听组件的点击-->
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
     <ul>
       <li>列表1</li>
       <li>列表2</li>
@@ -123,6 +129,8 @@ import FeatureView from "@/views/home/childComps/FeatureView";
 
 import TabControl from "@/components/content/tabControl/TabControl";
 import GoodsList from "@/components/content/goods/GoodsList";
+import Scroll from "@/components/common/scroll/Scroll";
+import BackTop from "@/components/content/backTop/BackTop";
 import {getHomeMultidata, getHomeGoods} from "@/network/home";
 
 
@@ -134,7 +142,9 @@ export default {
     RecommendView,
     FeatureView,
     TabControl,
-    GoodsList
+    GoodsList,
+    Scroll,
+    BackTop
   },
   data() {
     return {
@@ -146,7 +156,8 @@ export default {
         'sell': {page: 0, list: []},
 
       },
-      currentType: 'pop'
+      currentType: 'pop',
+      isShowBackTop: false
     }
   },
   created() {
@@ -199,6 +210,15 @@ export default {
         this.goods[type].page += 1
       })
     },
+    backClick() {
+      // console.log('backClick');
+      // 访问scroll组件中的scroll属性
+      this.$refs.scroll.scrollTo(0, 0, 500)
+    },
+    contentScroll(position) {
+      this.isShowBackTop = (-position.y) > 1000
+
+    }
   }
 }
 </script>
@@ -206,6 +226,8 @@ export default {
 <style scoped>
 #home {
   padding-top: 44px;
+  /* vh 视口， 屏幕可见部分的高度*/
+  height: 100vh;
 }
 
 .home-nav {
@@ -223,5 +245,11 @@ export default {
   position: sticky;
   top: 44px;
   z-index: 9;
+}
+
+.content {
+  /*height: 300px;*/
+  height: calc(100vh - 93px);
+  overflow: hidden;
 }
 </style>
