@@ -18,6 +18,10 @@ export default {
     probeType: {
       type: Number,
       default: 0
+    },
+    pullUpLoad: {
+      type: Boolean,
+      default: false
     }
   },
   data(){
@@ -29,20 +33,29 @@ export default {
     // 不要使用document.querySelector('.wrapper')，一个网页中可能存在多个叫wrapper的class，无法准确获取到该组件中的wrapper
     this.scroll = new BScroll(this.$refs.wrapper, {
       click: true,
-      probeType: this.probeType
+      probeType: this.probeType,
+      pullUpLoad: this.pullUpLoad
     })
 
-    // 实时监听
+    // 监听滚动事件
     this.scroll.on('scroll', (position) => {
       // console.log(position);
       this.$emit('scroll', position)
     })
 
+    // 监听上拉事件
+    this.scroll.on('pullingUp', () => {
+      // console.log('pullingUp');
+      this.$emit('pullingUp')
+    })
   },
   methods: {
     scrollTo(x, y, time = 300) {
       this.scroll.scrollTo(x, y, time)
     },
+    finishPullUp() {
+      this.scroll.finishPullUp()
+    }
   }
 }
 </script>
