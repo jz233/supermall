@@ -2,7 +2,7 @@
   <swiper>
     <swiper-item v-for="(item, index) in banners" :key="index">
       <a :href="item.link">
-        <img :src="item.image" alt="">
+        <img :src="item.image" alt="" @load="imageLoad">
       </a>
     </swiper-item>
   </swiper>
@@ -17,6 +17,11 @@ export default {
     Swiper,
     SwiperItem
   },
+  data(){
+    return {
+      isLoad: false
+    }
+  },
   props:{
     banners: {
       type: Array,
@@ -24,6 +29,15 @@ export default {
         return []
       }
     }
+  },
+  methods: {
+    imageLoad() {
+      // 避免多次获取offsetTop
+      if (!this.isLoad) {
+        this.$emit('swiperImageLoad');
+        this.isLoad = true
+      }
+    },
   }
 }
 </script>
