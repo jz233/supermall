@@ -64,7 +64,8 @@ export default {
       currentType: 'pop',
       isShowBackTop: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     }
   },
   created() {
@@ -91,10 +92,20 @@ export default {
 
     // 2.获取tabControl的offsetTop
     // 所有组件都有一个属性$el ： 用于获取组件中的元素
-    console.log(this.$refs.tabControl.$el.offsetTop);
-
+    console.log(this.$refs.tabControl1.$el.offsetTop);
   },
-
+  destroyed() {
+    console.log('destroyed');
+  },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 0)
+    // 避免切换导航时，自动滑到顶部的问题
+    this.$refs.scroll.refresh()
+  },
+  deactivated() {
+    console.log(this.$refs.scroll.getScrollY())
+    this.saveY = this.$refs.scroll.getScrollY()
+  },
   computed: {
     showGoods() {
       return this.goods[this.currentType].list
